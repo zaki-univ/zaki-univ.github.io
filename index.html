@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>UNIV_AR</title>
+
+	<!-- 使用するライブラリの読み込み -->
+	<script src="./build/three.js"></script>
+	<script src="./build/ar.js"></script>
+
+	<!-- CSSファイルの読み込みの記述 -->
+	<link rel="stylesheet" href="./MainStyle.css">
+
+</head>
+
+<body>
+	<!-- divは囲った要素をグループ化できる、CSSで一気に指定など -->
+	<div class="main">
+	<h1>WebAR：UNIVマークを投影</h1>
+	<p>これは練習として作ったものです。</p>
+	<p>スマホで開いて、マーカを読み取ってください。</p>
+	</div>
+
+<!-- webARの記述 -->
+<script>
+
+/*---------------------------------------------------------------------------
+ * ---初期設定------------------------------------------------------------------------
+ * --------------------------------------------------------------------------
+ */
+
+//---レンダラーの作成----------------------------------------------------
+const renderer = new THREE.WebGLRenderer({
+	antialias: true,
+	alpha: true
+});
+
+
+//おまじない：なぜこれが必要かの詳細は知らない…
+renderer.setClearColor( new THREE.Color('lightgrey'), 0);	//レンダリングするときの透過する部分の色の設定
+renderer.setSize(640,480);		//レンダリングする範囲、つまり座標系におけるスクリーンの大きさの設定？
+
+renderer.domElement.style.position = 'absolute';
+renderer.domElement.style.top = '0px';	//座標系がよくわからん
+renderer.domElement.style.left = '0px';
+
+//bodyタグへこのレンダラーを追加する
+document.body.appendChild( renderer.domElement );
+
+
+//---シーンの作成----------------------------------------------------------
+const scene = new THREE.Scene();
+
+
+
+//---カメラの作成・シーンに追加------------------------------------------------------------
+//この座標系はARだから設定しないはず、だってユーザのスマホが座標
+const camera = new THREE.Camera();
+scene.add(camera);
+
+/*---------------------------------------------------------------------------
+ * ---AR.jsの設定------------------------------------------------------------------------
+ * --------------------------------------------------------------------------
+ */
+
+//ARToolkitの操作
+const  arToolkitSource = new THREEx.ArToolkitSource({
+	//webカメラから読み取っていく
+	sourceType: 'webcam'
+});
+
+
+//ARToolkitを動かした？時の最初の処理
+arToolkitSource.init( function onReady(){ //onReadyの関数を渡している？、initをチェック
+	onResize()
+});
+
+
+//ウィンドウがリサイズしたの検知したときの処理：ようはリサイズ
+window.addEventListener( 'resize', function(){		//無記名関数として関数を引数に渡している、実質はリサイズ。
+	onResize();
+});
+
+
+//リサイズはいろんな場所で使うため、関数として定義しておく
+function onResize(){
+
+	//リサイズした後、その値を様々な部分に設定する。
+
+	arToolkitSource.onResize();								//toolkitの中のリサイズをする
+	arToolkitSource.copySizeTo(renderer.domElement);		//レンダラのサイズをコピー
+	if( arToolkitSourceContext.arController !== null){		//コンテキストのコントローラがNULLじゃない
+		arToolkitSource.copySizeTo( arToolkitContext.arController.canvas)	//
+	}
+}
+
+
+
+//ARToolkitContextの初期化：つまりいろいろな環境情報？の初期化
+
+//Contextの生成
+const arToolkitContext = new THREEx.ArToolkitContext({
+
+	//カメラのデータを入れた場所について設定
+	cameraParametersUrl: './data/data/camera_para.dat',
+	detectionMode: 'mono'		//検知モード
+});
+
+
+//初期化
+arToolkitContext.init(function onCompleted(){
+
+	//投影行列のコピー
+	camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+});
+
+
+
+/*---------------------------------------------------------------------------
+ * ---ARマーカの設定------------------------------------------------------------------------
+ * --------------------------------------------------------------------------
+ */
+//グループオブジェクト３Dを作成して、そこに後でmeshを追加する
+
+ const markerRoot = new THREE.Group();
+ scene.add(markerRoot);
+
+  const markerControls = new THREEx.ArMarkerControls( arToolkitContext, markerRoot, {		//AR.js＆Three.js＆Tweenのやつではカメラを渡していなかったが？
+
+	//マーカの設置的な
+	 type: 'pattern',
+	 patternUrl: './data/data/patt.hiro',
+	size: 1
+	// changeMatrixMode: 'cameraTransformMatrix'		//なんだろうこれ？
+ });
+
+//changeMatrixModeをcameraTransformMatrixにした場合に必要な設定↓
+//scene.visible = false;
+
+
+alert("ARマーカの設定ができたよ～");
+
+
+/*---------------------------------------------------------------------------
+ * ---オブジェクトの作成・シーンに追加------------------------------------------------------------------------
+ * --------------------------------------------------------------------------
+ */
+
+//形状データと材質データを作ってメッシュに突っ込む
+
+const geometry_cube = new THREE.CubeGeometry(1,1,1);
+const material_cube = new THREE.MeshNormalMaterial({
+	transparent: true,										//transparent：形：透明な、透き通った
+	opacity: 0.5,											//opacity：名：不透明度
+	side: THREE.DoubleSide
+});
+
+const mesh = new THREE.Mesh( geometry_cube, material_cube);
+mesh.position.z = geometry_cube.parameters.height / 2;
+
+markerRoot.add(mesh);
+
+
+alert("オブジェクトできたよ～")
+
+
+
+
+
+
+/*---------------------------------------------------------------------------
+ * ---レンダリング・ループ------------------------------------------------------------------------
+ * --------------------------------------------------------------------------
+ */
+function renderScene(){
+	requestAnimationFrame(renderScene);				//再帰的なループ
+	if( arToolkitSource.ready === false)	{ return; }	//メディアソースの準備ができていなければ抜ける
+
+	arToolkitContext.update( arToolkitSource.domElement);		//コンテキスト情報の更新
+
+	renderer.render(scene, camera);
+}
+
+renderScene();		//レンダリングの実行
+
+
+</script>
+</body>
+</html>
