@@ -18,8 +18,5 @@ body{
 
 
 .footer{
-	position: fixed;    /* 要素の位置を固定する */
-	bottom: 0;	    /* 数値は指定したキーワードからどの程度離れているかを示す*/
-	margin-left: auto;
-	margin-right: auto;
+	text-align: center;	/*文字を中央ぞろえ*/
 }
