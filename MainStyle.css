@@ -13,5 +13,11 @@ body{
 	padding: 10px;
 	text-align: center;/*文字を中央ぞろえ*/
 	border: 1px solid #cccccc; /*淵を入れる*/
-	margin: 30px 60px;		/*このクラスを親要素からどれだけ離すか。縦、横の順番*/
+	margin: 30px 60px;   /*このクラスを親要素からどれだけ離すか。縦、横の順番*/
+}
+
+
+.footer{
+	position: fixed;    /* 要素の位置を固定する */
+	bottom: 0;	    /* 数値は指定したキーワードからどの程度離れているかを示す
 }
