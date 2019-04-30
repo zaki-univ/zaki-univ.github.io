@@ -86,7 +86,7 @@ function showCount(id, inputYear, inputMonth, inputDate, inputHour, inputMin, in
    var msg;
    if( dnumTarget > dnumNow ) {
       // �܂����������Ă��Ȃ��ꍇ
-      msg = "あと" + msg2 + "振動数です。";
+      msg = "あと" + count + "振動数です。";
    } else {
       // �������߂����ꍇ
       msg = "すでに" + msg2 + "回すぎました";
