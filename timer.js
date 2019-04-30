@@ -41,19 +41,19 @@ function showCountdown(id, inputYear, inputMonth, inputDate, inputHour, inputMin
    var dSec   = diff2Dates / 1000;   // �b
    var dMiSec = diff2Dates % 1000;
    
-   var msg2 = Math.floor(dDays) + "��"
-            + Math.floor(dHour) + "����"
-            + Math.floor(dMin) + "��"
-            + Math.floor(dSec) + "�b" + dMiSec;
+   var msg2 = Math.floor(dDays) + "日"
+            + Math.floor(dHour) + "時"
+            + Math.floor(dMin) + "分"
+            + Math.floor(dSec) + "秒" + dMiSec;
    
    // �\��������̍쐬
    var msg;
    if( dnumTarget > dnumNow ) {
       // �܂����������Ă��Ȃ��ꍇ
-      msg = "���ƁA" + msg2 + "�ł��B";
+      msg = "あと" + msg2 + "です。";
    } else {
       // �������߂����ꍇ
-      msg = "����" + msg2 + "�O�ɉ߂��܂����B";
+      msg = "既に" + msg2 + "過ぎました";
    }
  
    // �쐬�����������\��
