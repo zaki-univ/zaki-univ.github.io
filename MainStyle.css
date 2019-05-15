@@ -1,0 +1,22 @@
+﻿@charset "UTF-8";
+
+/*body全体に反映されるスタイル*/
+body{
+	/*色：アリスブルー*/
+	background: #f0f8ff;
+	font-family: Meiryo;
+}
+
+/*クラス名のついたdivの指定は、先頭にドットをつけてクラス名*/
+.main{
+	background: #ffffff;
+	padding: 10px;
+	text-align: center;/*文字を中央ぞろえ*/
+	border: 1px solid #cccccc; /*淵を入れる*/
+	margin: 30px 60px;   /*このクラスを親要素からどれだけ離すか。縦、横の順番*/
+}
+
+
+.footer{
+	text-align: center;	/*文字を中央ぞろえ*/
+}
